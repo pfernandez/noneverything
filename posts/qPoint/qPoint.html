@@ -1,0 +1,111 @@
+<h1>Wave Simulation with CUDA</h2>
+<p>
+    Two things that I've been wanting to do for a long time are:
+    <ol>
+        <li>Write my own physics simulation that runs on my laptop's graphics card, and</li>
+        <li>Mess around with wave visualizations.</li>
+    </ol>
+    I had some old code from a year or two ago, when I had tried to write a CUDA based n-body
+    simulation, that I never quite got working correctly before I got bored and set it aside. This
+    project was a great opportunity to revive it and get the issues sorted out in the context of
+    some new physics.
+</p>
+<div class="centered-block">
+    <p>From the new simulation</p>
+    <iframe width="480" height="360" src="http://www.youtube.com/embed/13WRCUZzApU"
+        frameborder="0" allowfullscreen></iframe>
+</div>
+<p>
+<h2>The Concept</h2>
+<p>
+    I wanted code that could help me think about spacial dynamics rather than just be another
+    complicated thing I have to deal with. I also have a bit to learn before attempting really
+    relevant problems anyway, so I decided to at least begin to build something that can function
+    as a sort of general-purpose thinking, computing and visualization tool that can grow with
+    me as I grow.
+</p>
+<p>
+    The idea behind the code goes something like this: imagine a point in space, just a single
+    point without any spacial extent of its own. That point has certain properties that we might
+    care about in a given situation: x, y, and z coordinates; mass; amplitude; whatever. The main
+    thing is just to clearly define the properties associated with this point that are important
+    for the problem and to ignore everything else.
+</p>
+<p>
+    At any given moment, those properties will have certain values, but at the next moment those
+    values may have changed. So there's a function that goes along with our point that determines
+    how its property values change from one moment to the next. Figuring out what that function is
+    is called Physics, and yes, it's the hard part. I like to imagine myself as the point, and then
+    think about what forces might be pulling on me, and in what directions. I guess the whole
+    "point" of this computer program is to get away from all the extraneous complexity and clear
+    a space where it's easy to think about just one thing.
+</p>
+<h2>The Code</h2>
+<p>
+    I started by defining a "point" data type and giving it the properties it needs. Since I was 
+    doing a pretty simple 2D wave simulaton for this project all I needed were x, y, and &Psi;.
+</p>
+    <pre>
+typedef struct {
+
+    float x;
+    float y;
+    float psi;
+
+} point;</pre>
+<p>
+    Now I could envision my "point" as a zero-dimensional "container" that carries all of its
+    relevant data around with it wherever it goes, make as many copies of the point as I like,
+    and scatter them around space by assigning unique values to the properties of
+    each and storing them all in a giant array that gets passed to the GPU for number-crunching.
+</p>
+<p>
+    Back in the mindset of a single point, I wrote a GPU function (a.k.a. a "kernel") that takes the
+    properties of the point at a single instant in time and replaces them with the values they will
+    have at the next instant. A simplified version of it looks like this:
+    <pre>
+__device__ float t = 0;
+
+__global__ void incrementPoint( point *p ) {
+
+    // CUDA's index for this "point":
+    int	i = blockIdx.x * blockDim.x
+            + threadIdx.x;
+
+    // A disbursive wave packet:
+    float r = sqrt( p[i].x*p[i].x
+              + p[i].y*p[i].y );
+    float alpha = r - c * t;
+    p[i].psi = 2 * A * dk * sin( dk * alpha )
+          * cos( k * alpha ) / ( dk * alpha );
+
+    // Incrementing the time:
+    t += dt;
+}</pre>
+    where I've defined the constants <code>c, A, k, dk</code> and <code>dt</code> elsewhere. I
+    pulled this equation from A. C. Philips' <em>An Introduction to Quantum Mechanics</em>,
+    problem 2.2, and some good choices for <code>dk</code> were given in fig. 2.1 of the same text.
+</p>
+<h2>The Rest</h2>
+<p>
+    was really just filling in the details, which of course in practice was less than trivial;
+    learning to program in CUDA is not for the feint of heart! In fact I probably spent 99% of my
+    time on these "details." But it was a worthwhile effort, because now I can plug any equation
+    I like into <code>incrementPoint()</code> and get a totally different simulation (with only a
+    few other minor tweaks.)
+</p>
+    The source is all zipped up for your perusal below, written in a verbose coding style and full
+    of comments. To run it, you can either compile and run <code>nPoint.cu</code> directly, or
+    execute <code>runit.sh</code>, which creates a unique directory where data, images, and a
+    video are generated and stored. You'll want to first edit line 33 so that the call to the nvcc
+    compiler will work for your machine, and while you're in there take a look at the other options
+    I've built in. The actual simulation parameters like the number of points and time step size
+    are set at the top of <code>qPoint.cu</code> .
+</p>
+<br />
+<a href="/posts/qPoint/qPoint.zip">qPoint.zip</a>
+<br /><br /><br /><br />
+<div class="centered-block">
+    <p>2D mesh interpolated over 32,768 points</p>
+    <a href="/posts/qPoint/00001.jpg"><img src="/posts/qPoint/00001.jpg" alt="Wave Packet"></a>
+</div>

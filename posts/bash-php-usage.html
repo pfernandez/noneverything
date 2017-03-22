@@ -1,0 +1,24 @@
+<h1>Executing PHP from the command line in Linux</h1>
+<p>Because I always seem to forget the syntax, here's an example:</p>
+<pre>php -r 'if(true) echo "hi\n";'</pre>
+<p>
+    Note that escaped characters need to be wrapped in double quotes.
+    To run the code inside a file, use the syntax
+</p>
+<pre>php -f my_script.php $arg1 $arg2 $arg3</pre>
+<p>
+    The arguments <code>$arg1</code>, <code>$arg2</code>, etc. can then
+    be accessed within the script like so:
+</p>
+<pre>
+&lt;?php
+
+    $argument1 = $argv[1];
+    $argument2 = $argv[2];
+    $argument3 = $argv[3];
+    
+    // Do stuff...
+
+?&gt;
+</pre>
+<p>(<code>$argv[0]</code> is the name of the script itself.)</p>

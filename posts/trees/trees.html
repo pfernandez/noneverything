@@ -1,0 +1,109 @@
+<script type="text/javascript" src="processing-1.3.6.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+	
+		// Display the selected sketch.
+		var p = null;
+		function newSketch(pdeFile) {
+			if(p) {
+      			p.exit();
+      			p = null;
+      			paused = false;
+    		}
+			var fileRequest = new window.XMLHttpRequest();
+			fileRequest.open("GET", pdeFile + "?foo=bar", false);
+      		fileRequest.send(null);
+      		var canvas = $("#sketchCanvas").get(0);
+			p = new Processing(canvas, fileRequest.responseText);
+		}
+		
+		// Load a new sketch when a button is clicked.
+		$(".contentsButton").click(function() {
+			newSketch(this.name);
+		});
+	});
+</script>
+<style>
+	#warning {
+		font-weight: bold;
+	}
+	#over {
+	    display: inline-block;
+	    padding: 0 1em 2em 1.5em;
+	}
+	#over, .sidebar, #header {
+		background: rgba(255, 255, 255, 0.75);
+		border-radius: 5px;
+	}
+	#under {
+		top: 0%;
+		left: 0%;
+		margin: 0;
+		padding: 0;
+		position: absolute;
+		z-index: -1;
+	}
+	#buttonList {
+		list-style-type: decimal;
+		padding-top: 2%;
+		padding-bottom: 2%;
+	}
+	#buttonList li {
+		list-style-type: decimal;
+		padding-top: 2%;
+		padding-bottom: 2%;
+	}
+	input.contentsButton {
+		font: inherit;
+		font-size: .75em;
+		text-decoration: underline;
+		white-space: normal;
+		cursor: pointer;
+		border: none;
+		background: none;
+	}
+	.listBlock {
+		float:left;
+		margin: 0 1.5em;
+	}
+</style>
+
+<div id="over">
+	<h2>Variations on the Recursive Tree.</h2>
+	<p>All of these sketches are based on a
+	<a href="http://processingjs.org/learning/topic/tree/">Processing example</a> 
+	originally written by Daniel Shiffman. Each is randomly generated, so a link will produce a different sketch each time it is clicked.</p>
+	<p>
+		<span id="warning">Slow computers beware: </span>
+		these are computationally intensive animations.
+	</p>
+	<ul id="buttonList">
+		<div class="listBlock">
+			<li><input type="submit" class="contentsButton post-button"
+				value="Random symmetric growth" name="project3_1.pde"></li>
+			<li><input type="submit" class="contentsButton post-button"
+				value="Asymmetric with blossoms" name="project3_2.pde"></li>
+			<li><input type="submit" class="contentsButton post-button"
+				value="Secondary rotations" name="project3_3.pde"></li>
+			<li><input type="submit" class="contentsButton post-button"
+				value="Unlimited rotations" name="project3_4.pde"></li>
+			<li><input type="submit" class="contentsButton post-button"
+				value="Temporal extrusions" name="project3_5.pde"></li>
+		</div>
+		<div class="listBlock">
+			<li><input type="submit" class="contentsButton post-button"
+				value="Explosive deconstruction" name="project3_6.pde"></li>
+			<li><input type="submit" class="contentsButton post-button"
+				value="Softening" name="project3_7.pde"></li>
+			<li><input type="submit" class="contentsButton post-button"
+				value="Symmetric expansion" name="project3_8.pde"></li>
+			<li><input type="submit" class="contentsButton post-button"
+				value="Spirals" name="project3_9.pde"></li>
+			<li><input type="submit" class="contentsButton post-button"
+				value="Compound vortices" name="project3_10.pde"></li>
+		</div>
+	</ul>
+</div>
+<div id="under">
+	<canvas id="sketchCanvas"></canvas>
+</div>
