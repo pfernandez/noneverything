@@ -29,12 +29,12 @@ function slideMenu() {
         var sidebar  = $(".sidebar");
         var list = sidebar.find("dl");
         list.hide();
-        
+
         // Add the "Contents" element.
         var contentsButton = document.createElement("h2");
         $(contentsButton).addClass("contents").text("Contents");
         sidebar.prepend(contentsButton);
-        
+
         $(".post-button, .contents").on("click.list", function() {
             list.slideToggle();
         });
@@ -48,16 +48,15 @@ $.ajaxSetup({ cache: false });
 
 /*
  * Display post and change url when an item is clicked.
-
+ */
 $(".post-button").click(function(event) {
     event.preventDefault();
     $(".post-button").removeClass("active");
     $(this).addClass("active");
-	var href = baseUrl + $(this).attr("href");
-	window.history.pushState(null, $(this).text(), href);
-	displayPost();
+	var href = $(this).attr("href");
+	//window.history.pushState(null, $(this).text(), href);
+	displayPost(href);
 });
- */
 
 /*
  * Load post corresponding to address bar.
@@ -74,41 +73,37 @@ displayPost(window.location.pathname); //reqd on intial page load in FF, causes 
  *
  * string: "path/to/filename"
  */
-function displayPost() {
+function displayPost(href) {
 
-	var path = window.location.pathname;
-	
-   // if(path == baseUrl + "index.html") {
-		path = baseUrl + "/posts/hello.html";
-//	}
-		
-	$("#post").fadeOut(50, 0.0, function() {
-		$(this).load(path+'?_ajax=1', function(response, status, xhr) {
-		
-			if (status == "error") {
-				var msg = "Sorry but there was an error: ";
-				console.log(msg + xhr.status + " " + xhr.statusText);
-			}
-			else {
-				$(this).fadeIn(100).find("a img").click(function(event) {
+  href = href ||  "posts/hello.html";
+  path = "//" + window.location.host + "/" + href;
 
-					// This is the point at which I should be creating a PostContent
-					// object, then using a constructor instead of all of these
-					// chained functions.
+  $("#post").fadeOut(50, 0.0, function() {
+    $(this).load(path, function(response, status, xhr) {
 
-					enlargeImage(event, this);
-				});
-			}
-		});
-	});
+      if (status == "error") {
+        console.log(path + ": " + xhr.status + " " + xhr.statusText);
+      }
+      else {
+        $(this).fadeIn(100).find("a img").click(function(event) {
+
+          // This is the point at which I should be creating a PostContent
+          // object, then using a constructor instead of all of these
+          // chained functions.
+
+          enlargeImage(event, this);
+        });
+      }
+    });
+  });
 }
-displayPost();
+displayPost(false);
 
 function enlargeImage(event, element) {
-	
+
 	event.preventDefault();
 	$(element)
-		.animate({"max-width": ($(document).width() * .7) + "px"}, 500)
+		.animate({"max-width": ($(document).width() * 0.7) + "px"}, 500)
 		.unbind("click")
 		.click(function(event) {
 			shrinkImage(event, element);
@@ -117,7 +112,7 @@ function enlargeImage(event, element) {
 
 
 function shrinkImage(event, element) {
-	
+
 	event.preventDefault();
 	$(element)
 		.animate({"max-width": "100%"}, 500)
