@@ -1,0 +1,14 @@
+{
+	"name": "noneverything",
+	"version": "1.0.0",
+	"description": "miscellaneous debris",
+  "repository": "https://github.com/pfernandez/noneverything",
+  "license": "GPL-3.0",
+  "main": "index.html",
+  "dependencies": {
+    "live-server": "^1.1.0"
+  },
+  "scripts": {
+    "start": "live-server"
+  }
+}
