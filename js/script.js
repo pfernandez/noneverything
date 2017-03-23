@@ -50,30 +50,33 @@ $.ajaxSetup({ cache: false });
  * Display post and change url when an item is clicked.
  */
 $(".post-button").click(function(event) {
-    event.preventDefault();
-    $(".post-button").removeClass("active");
-    $(this).addClass("active");
-	var href = $(this).attr("href");
-	window.history.pushState(null, $(this).text(), baseUrl + href);
-	displayPost(href);
+  event.preventDefault();
+  $(".post-button").removeClass("active");
+  $(this).addClass("active");
+  var href = $(this).attr("href");
+  window.history.pushState(null, $(this).text(), baseUrl + href);
+  displayPost(href);
 });
 
 /*
  * Load post corresponding to address bar.
-
-window.onpopstate = function() {
-	console.log("hey");
-	displayPost();
-}
-displayPost(window.location.pathname); //reqd on intial page load in FF, causes duplicate in chrome :(
  */
+window.onpopstate = function() {
+	displayPost(window.location.pathname);
+}
+
+//reqd on intial page load in FF, causes duplicate in chrome :(
+// Maybe js not accessible from post?
+displayPost(window.location.pathname);
 
 /*
  * Display contents of a file as a post.
  *
- * string: "path/to/filename"
+ * href: "path/to/filename"
  */
 function displayPost(href) {
+
+  console.log ("Loading ", href)
 
   href = href ||  "posts/hello.html";
   path = "//" + window.location.host + "/" + href;
