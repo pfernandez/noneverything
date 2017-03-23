@@ -54,7 +54,7 @@ $(".post-button").click(function(event) {
     $(".post-button").removeClass("active");
     $(this).addClass("active");
 	var href = $(this).attr("href");
-	//window.history.pushState(null, $(this).text(), href);
+	window.history.pushState(null, $(this).text(), baseUrl + href);
 	displayPost(href);
 });
 
