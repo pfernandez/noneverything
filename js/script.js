@@ -43,7 +43,7 @@ function slideMenu() {
 slideMenu();
 
 
-var baseUrl = window.location.pathname.replace("index.html", "");
+var baseUrl = window.location.href.split("posts/")[0];
 $.ajaxSetup({ cache: false });
 
 /*
@@ -53,8 +53,11 @@ $(".post-button").click(function(event) {
   event.preventDefault();
   $(".post-button").removeClass("active");
   $(this).addClass("active");
-  var href = $(this).attr("href");
-  window.history.pushState(null, $(this).text(), baseUrl + href);
+  var path = $(this).attr("href")
+               .split("posts/")
+               .filter(function(e){return e});
+  var href = baseUrl + "posts/" + path;
+  window.history.pushState(null, $(this).text(), href);
   displayPost(href);
 });
 
@@ -67,25 +70,20 @@ window.onpopstate = function() {
 
 //reqd on intial page load in FF, causes duplicate in chrome :(
 // Maybe js not accessible from post?
-displayPost(window.location.pathname);
+//displayPost(window.location.pathname);
 
 /*
  * Display contents of a file as a post.
- *
- * href: "path/to/filename"
  */
 function displayPost(href) {
 
-  console.log ("Loading ", href)
-
-  href = href ||  "posts/hello.html";
-  path = "//" + window.location.host + "/" + href;
+  href = href || baseUrl + "posts/hello.html";
 
   $("#post").fadeOut(50, 0.0, function() {
-    $(this).load(path, function(response, status, xhr) {
+    $(this).load(href, function(response, status, xhr) {
 
       if (status == "error") {
-        console.log(path + ": " + xhr.status + " " + xhr.statusText);
+        console.log(href + ": " + xhr.status + " " + xhr.statusText);
       }
       else {
         $(this).fadeIn(100).find("a img").click(function(event) {
